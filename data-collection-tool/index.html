@@ -38,6 +38,22 @@
 
       <form id="registrationForm" novalidate>
         <div class="field">
+          <label>Topic of interest <span class="required" aria-hidden="true">*</span></label>
+          <div class="topic-options" role="group" aria-describedby="topicOfInterestHint topicOfInterestError">
+            <label class="option-row" for="careerReadiness">
+              <input id="careerReadiness" name="topicOfInterest" type="checkbox" value="Career Readiness" />
+              <span>1. Career Readiness</span>
+            </label>
+            <label class="option-row" for="softSkills">
+              <input id="softSkills" name="topicOfInterest" type="checkbox" value="Soft skills" />
+              <span>2. Soft skills</span>
+            </label>
+          </div>
+          <small class="field-hint" id="topicOfInterestHint">You can select one or both options.</small>
+          <small class="field-error" id="topicOfInterestError"></small>
+        </div>
+
+        <div class="field">
           <label for="fullName">Full Name <span class="required" aria-hidden="true">*</span></label>
           <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" placeholder="e.g. Ama Mensah" aria-describedby="fullNameHint fullNameError" required />
           <small class="field-hint" id="fullNameHint">Enter the full name as it appears on the Ghana Card.</small>
@@ -70,22 +86,6 @@
           <input id="location" name="location" type="text" autocomplete="address-level2" maxlength="120" placeholder="e.g. Madina, Adenta, East Legon" aria-describedby="locationHint locationError" required />
           <small class="field-hint" id="locationHint">Enter the participant's current area or community, not only the region.</small>
           <small class="field-error" id="locationError"></small>
-        </div>
-
-        <div class="field">
-          <label>Topic of interest <span class="required" aria-hidden="true">*</span></label>
-          <div class="topic-options" role="group" aria-describedby="topicOfInterestHint topicOfInterestError">
-            <label class="option-row" for="careerReadiness">
-              <input id="careerReadiness" name="topicOfInterest" type="checkbox" value="Career Readiness" />
-              <span>1. Career Readiness</span>
-            </label>
-            <label class="option-row" for="softSkills">
-              <input id="softSkills" name="topicOfInterest" type="checkbox" value="Soft skills" />
-              <span>2. Soft skills</span>
-            </label>
-          </div>
-          <small class="field-hint" id="topicOfInterestHint">You can select one or both options.</small>
-          <small class="field-error" id="topicOfInterestError"></small>
         </div>
 
         <div class="privacy-note">
