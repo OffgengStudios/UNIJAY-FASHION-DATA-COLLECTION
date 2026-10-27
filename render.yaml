@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: unijay-participant-collection
+    runtime: static
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: node build.mjs
+    staticPublishPath: dist
+    envVars:
+      - key: HAPPY_API_BASE_URL
+        sync: false
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /config.js
+        name: Cache-Control
+        value: no-store
+      - path: /index.html
+        name: Cache-Control
+        value: no-store

@@ -1,124 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Jobberman registration data collection form" />
-  <meta name="theme-color" content="#0b5ed7" />
-  <title>Jobberman Registration</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
-  <link rel="shortcut icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  <link rel="manifest" href="site.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <main class="page-shell">
-    <section class="card" aria-labelledby="formTitle">
-      <header class="card-header">
-        <div class="brand-row">
-          <img class="brand-mark" src="favicon.svg" alt="" width="48" height="48" />
-          <div>
-            <p class="brand-name">Jobberman</p>
-            <p class="eyebrow">Registration</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Jobberman registration data collection form"
+    />
+    <meta name="theme-color" content="#0b5ed7" />
+    <title>Jobberman Registration</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="card" aria-labelledby="formTitle">
+        <header class="card-header">
+          <div class="brand-row">
+            <img
+              class="brand-mark"
+              src="favicon.svg"
+              alt=""
+              width="48"
+              height="48"
+            />
+            <div>
+              <p class="brand-name">Jobberman</p>
+              <p class="eyebrow">Registration</p>
+            </div>
           </div>
-        </div>
 
-        <h1 id="formTitle">Capacity Building Registration</h1>
-        <p class="subtitle">Complete the form with the participant's correct information. All fields are required.</p>
+          <h1 id="formTitle">Capacity Building Registration</h1>
+          <p class="subtitle">
+            Complete the form with the participant's correct information. Other
+            Names is optional. All other fields are required.
+          </p>
 
-        <div class="progress-line" aria-live="polite">
-          <span id="progressText">0 of 6 fields completed</span>
-          <div class="progress-track" aria-hidden="true">
-            <div id="progressBar" class="progress-bar"></div>
+          <div class="progress-line" aria-live="polite">
+            <span id="progressText">0 of 7 fields completed</span>
+            <div class="progress-track" aria-hidden="true">
+              <div id="progressBar" class="progress-bar"></div>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <form id="registrationForm" novalidate>
-        <div class="field">
-          <label>Topic of interest <span class="required" aria-hidden="true">*</span></label>
-          <div class="topic-options" role="group" aria-describedby="topicOfInterestHint topicOfInterestError">
-            <label class="option-row" for="careerReadiness">
-              <input id="careerReadiness" name="topicOfInterest" type="checkbox" value="Career Readiness" />
-              <span>1. Career Readiness</span>
-            </label>
-            <label class="option-row" for="softSkills">
-              <input id="softSkills" name="topicOfInterest" type="checkbox" value="Soft skills" />
-              <span>2. Soft skills</span>
-            </label>
+        <form id="registrationForm" novalidate>
+          <div class="field">
+            <label
+              >Topic of interest
+              <span class="required" aria-hidden="true">*</span></label
+            >
+            <div
+              class="topic-options"
+              role="group"
+              aria-describedby="topicOfInterestHint topicOfInterestError"
+            >
+              <label class="option-row" for="careerReadiness">
+                <input
+                  id="careerReadiness"
+                  name="topicOfInterest"
+                  type="checkbox"
+                  value="CAREER_READINESS"
+                />
+                <span>1. Career Readiness</span>
+              </label>
+              <label class="option-row" for="softSkills">
+                <input
+                  id="softSkills"
+                  name="topicOfInterest"
+                  type="checkbox"
+                  value="SOFT_SKILLS"
+                />
+                <span>2. Soft skills</span>
+              </label>
+            </div>
+            <small class="field-hint" id="topicOfInterestHint"
+              >You can select one or both options.</small
+            >
+            <small class="field-error" id="topicOfInterestError"></small>
           </div>
-          <small class="field-hint" id="topicOfInterestHint">You can select one or both options.</small>
-          <small class="field-error" id="topicOfInterestError"></small>
-        </div>
 
-        <div class="field">
-          <label for="fullName">Full Name <span class="required" aria-hidden="true">*</span></label>
-          <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" placeholder="e.g. Ama Mensah" aria-describedby="fullNameHint fullNameError" required />
-          <small class="field-hint" id="fullNameHint">Enter the full name as it appears on the Ghana Card.</small>
-          <small class="field-error" id="fullNameError"></small>
-        </div>
+          <fieldset class="name-fields">
+            <legend>Full Name</legend>
+            <div class="field">
+              <label for="firstName"
+                >First Name
+                <span class="required" aria-hidden="true">*</span></label
+              >
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autocomplete="given-name"
+                maxlength="100"
+                required
+                aria-describedby="firstNameError"
+              />
+              <small class="field-error" id="firstNameError"></small>
+            </div>
+            <div class="field">
+              <label for="otherNames">Other Names — optional</label>
+              <input
+                id="otherNames"
+                name="otherNames"
+                type="text"
+                autocomplete="additional-name"
+                maxlength="100"
+              />
+            </div>
+            <div class="field">
+              <label for="surname"
+                >Surname
+                <span class="required" aria-hidden="true">*</span></label
+              >
+              <input
+                id="surname"
+                name="surname"
+                type="text"
+                autocomplete="family-name"
+                maxlength="100"
+                required
+                aria-describedby="surnameError"
+              />
+              <small class="field-error" id="surnameError"></small>
+            </div>
+          </fieldset>
 
-        <div class="field">
-          <label for="phone">Phone Number <span class="required" aria-hidden="true">*</span></label>
-          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="024 123 4567" maxlength="17" aria-describedby="phoneHint phoneError" required />
-          <small class="field-hint" id="phoneHint">You can enter a local number; it will be stored in +233 format.</small>
-          <small class="field-error" id="phoneError"></small>
-        </div>
-
-        <div class="field">
-          <label for="dateOfBirth">Date of Birth <span class="required" aria-hidden="true">*</span></label>
-          <input id="dateOfBirth" name="dateOfBirth" type="date" aria-describedby="dateOfBirthHint dateOfBirthError" required />
-          <small class="field-hint" id="dateOfBirthHint">Select the participant's date of birth.</small>
-          <small class="field-error" id="dateOfBirthError"></small>
-        </div>
-
-        <div class="field">
-          <label for="ghanaCard">Ghana Card Number <span class="required" aria-hidden="true">*</span></label>
-          <input id="ghanaCard" name="ghanaCard" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="GHA-123456789-0" maxlength="15" aria-describedby="ghanaCardHint ghanaCardError" required />
-          <small class="field-hint" id="ghanaCardHint">Format: GHA-XXXXXXXXX-X. Hyphens are added automatically.</small>
-          <small class="field-error" id="ghanaCardError"></small>
-        </div>
-
-        <div class="field">
-          <label for="location">Current Area / Community <span class="required" aria-hidden="true">*</span></label>
-          <input id="location" name="location" type="text" autocomplete="address-level2" maxlength="120" placeholder="e.g. Madina, Adenta, East Legon" aria-describedby="locationHint locationError" required />
-          <small class="field-hint" id="locationHint">Enter the participant's current area or community, not only the region.</small>
-          <small class="field-error" id="locationError"></small>
-        </div>
-
-        <div class="privacy-note">
-          <strong>Privacy</strong>
-          <span>This information is collected for registration and capacity building-related purposes and should only be accessed by authorised staff.</span>
-        </div>
-
-        <div class="consent-row">
-          <input id="consent" name="consent" type="checkbox" required />
-          <label for="consent">I confirm that the information provided is correct and consent to its collection for the stated purpose.</label>
-        </div>
-        <small class="field-error consent-error" id="consentError"></small>
-
-        <button id="submitButton" type="submit">
-          <span id="submitButtonText">Submit Registration</span>
-          <span id="submitSpinner" class="spinner" aria-hidden="true"></span>
-        </button>
-
-        <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
-
-        <section id="successCard" class="success-card" hidden aria-live="polite">
-          <h2>Registration Complete</h2>
-          <p>The participant's information has been submitted successfully.</p>
-          <div class="record-box">
-            <span>Registration ID</span>
-            <strong id="recordId">—</strong>
+          <div class="field">
+            <label for="phone"
+              >Phone Number
+              <span class="required" aria-hidden="true">*</span></label
+            >
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              placeholder="024 123 4567"
+              maxlength="17"
+              aria-describedby="phoneHint phoneError"
+              required
+            />
+            <small class="field-hint" id="phoneHint"
+              >You can enter a local number; it will be stored in +233
+              format.</small
+            >
+            <small class="field-error" id="phoneError"></small>
           </div>
-          <button id="registerAnotherButton" class="secondary-button" type="button">Register Another Person</button>
-        </section>
-      </form>
-    </section>
-  </main>
 
-  <script src="app.js"></script>
-</body>
+          <div class="field">
+            <label for="dateOfBirth"
+              >Date of Birth
+              <span class="required" aria-hidden="true">*</span></label
+            >
+            <input
+              id="dateOfBirth"
+              name="dateOfBirth"
+              type="date"
+              aria-describedby="dateOfBirthHint dateOfBirthError"
+              required
+            />
+            <small class="field-hint" id="dateOfBirthHint"
+              >Select the participant's date of birth.</small
+            >
+            <small class="field-error" id="dateOfBirthError"></small>
+          </div>
+
+          <div class="field">
+            <label for="ghanaCard"
+              >Ghana Card Number
+              <span class="required" aria-hidden="true">*</span></label
+            >
+            <input
+              id="ghanaCard"
+              name="ghanaCard"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              placeholder="GHA-123456789-0"
+              maxlength="15"
+              aria-describedby="ghanaCardHint ghanaCardError"
+              required
+            />
+            <small class="field-hint" id="ghanaCardHint"
+              >Format: GHA-XXXXXXXXX-X. Hyphens are added automatically.</small
+            >
+            <small class="field-error" id="ghanaCardError"></small>
+          </div>
+
+          <div class="field">
+            <label for="location"
+              >Current Area / Community
+              <span class="required" aria-hidden="true">*</span></label
+            >
+            <input
+              id="location"
+              name="location"
+              type="text"
+              autocomplete="address-level2"
+              maxlength="120"
+              placeholder="e.g. Madina, Adenta, East Legon"
+              aria-describedby="locationHint locationError"
+              required
+            />
+            <small class="field-hint" id="locationHint"
+              >Enter the participant's current area or community, not only the
+              region.</small
+            >
+            <small class="field-error" id="locationError"></small>
+          </div>
+
+          <div class="privacy-note">
+            <strong>Privacy</strong>
+            <span id="privacyNotice">Loading the current privacy notice…</span>
+            <small id="privacyVersion"></small>
+          </div>
+
+          <div class="consent-row">
+            <input id="consent" name="consent" type="checkbox" required />
+            <label for="consent"
+              >I confirm that the information provided is correct and consent to
+              its collection for the stated purpose.</label
+            >
+          </div>
+          <small class="field-error consent-error" id="consentError"></small>
+
+          <div class="honeypot" aria-hidden="true">
+            <label for="website">Website</label
+            ><input
+              id="website"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+          <button id="submitButton" type="submit" disabled>
+            <span id="submitButtonText">Submit Registration</span>
+            <span id="submitSpinner" class="spinner" aria-hidden="true"></span>
+          </button>
+
+          <div
+            id="statusMessage"
+            class="status-message"
+            role="status"
+            aria-live="polite"
+          ></div>
+
+          <section
+            id="successCard"
+            class="success-card"
+            hidden
+            aria-live="polite"
+          >
+            <h2>Registration Complete</h2>
+            <p>
+              The participant's information has been submitted successfully.
+            </p>
+            <div class="record-box">
+              <span>Registration ID</span>
+              <strong id="recordId">—</strong>
+            </div>
+            <button
+              id="registerAnotherButton"
+              class="secondary-button"
+              type="button"
+            >
+              Register Another Person
+            </button>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="intake-contract.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
