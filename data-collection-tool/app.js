@@ -1,4 +1,7 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxifDCyKqY9ADKEeXNUo68YyMpn_VRBoENElTlrJxiB52YbTQIMLDMubpq-oI1g_zFgeA/exec";
+const API_BASE = (window.UNIJAY_CONFIG?.apiBaseUrl || "").replace(/\/$/, "");
+let intakeConfig = null;
+let previousContent = null;
+let submissionId = null;
 
 const form = document.getElementById("registrationForm");
 const submitButton = document.getElementById("submitButton");
@@ -12,21 +15,31 @@ const progressText = document.getElementById("progressText");
 const progressBar = document.getElementById("progressBar");
 
 const fields = {
-  fullName: document.getElementById("fullName"),
+  firstName: document.getElementById("firstName"),
+  otherNames: document.getElementById("otherNames"),
+  surname: document.getElementById("surname"),
   phone: document.getElementById("phone"),
   dateOfBirth: document.getElementById("dateOfBirth"),
   ghanaCard: document.getElementById("ghanaCard"),
   location: document.getElementById("location"),
   topicOfInterest: document.getElementById("careerReadiness"),
-  consent: document.getElementById("consent")
+  consent: document.getElementById("consent"),
 };
 
 const topicFields = {
   careerReadiness: document.getElementById("careerReadiness"),
-  softSkills: document.getElementById("softSkills")
+  softSkills: document.getElementById("softSkills"),
 };
 
-const requiredDataFields = ["fullName", "phone", "dateOfBirth", "ghanaCard", "location", "topicOfInterest"];
+const requiredDataFields = [
+  "firstName",
+  "surname",
+  "phone",
+  "dateOfBirth",
+  "ghanaCard",
+  "location",
+  "topicOfInterest",
+];
 
 function normalizePhone(value) {
   const cleaned = String(value || "").replace(/[\s()-]/g, "");
@@ -92,16 +105,19 @@ function getSelectedTopics() {
 }
 
 function validateField(fieldName) {
-  if (fieldName === "fullName") {
-    const value = fields.fullName.value.trim();
-    const valid = value.length >= 2;
-    setError("fullName", valid ? "" : "Enter the participant's full name.");
+  if (["firstName", "surname"].includes(fieldName)) {
+    const value = fields[fieldName].value.trim();
+    const valid = value.length >= 1;
+    setError(fieldName, valid ? "" : "Enter the participant's name.");
     return valid;
   }
 
   if (fieldName === "phone") {
     const valid = /^\+233\d{9}$/.test(normalizePhone(fields.phone.value));
-    setError("phone", valid ? "" : "Enter a valid 10-digit Ghana phone number.");
+    setError(
+      "phone",
+      valid ? "" : "Enter a valid 10-digit Ghana phone number.",
+    );
     return valid;
   }
 
@@ -116,28 +132,40 @@ function validateField(fieldName) {
       valid = !Number.isNaN(dob.getTime()) && dob < today;
     }
 
-    setError("dateOfBirth", valid ? "" : "Select a valid date of birth in the past.");
+    setError(
+      "dateOfBirth",
+      valid ? "" : "Select a valid date of birth in the past.",
+    );
     return valid;
   }
 
   if (fieldName === "ghanaCard") {
     const formatted = normalizeGhanaCard(fields.ghanaCard.value);
     const valid = /^GHA-\d{9}-\d$/.test(formatted);
-    setError("ghanaCard", valid ? "" : "Enter a valid Ghana Card number: GHA-XXXXXXXXX-X.");
+    setError(
+      "ghanaCard",
+      valid ? "" : "Enter a valid Ghana Card number: GHA-XXXXXXXXX-X.",
+    );
     return valid;
   }
 
   if (fieldName === "location") {
     const value = fields.location.value.trim();
     const valid = value.length >= 2;
-    setError("location", valid ? "" : "Enter the participant's current area or community.");
+    setError(
+      "location",
+      valid ? "" : "Enter the participant's current area or community.",
+    );
     return valid;
   }
 
   if (fieldName === "topicOfInterest") {
     const selectedTopics = getSelectedTopics();
     const valid = selectedTopics.length > 0;
-    setError("topicOfInterest", valid ? "" : "Select at least one topic of interest.");
+    setError(
+      "topicOfInterest",
+      valid ? "" : "Select at least one topic of interest.",
+    );
     return valid;
   }
 
@@ -156,10 +184,13 @@ function validateForm() {
 }
 
 function fieldLooksComplete(fieldName) {
-  if (fieldName === "fullName") return fields.fullName.value.trim().length >= 2;
-  if (fieldName === "phone") return /^\+233\d{9}$/.test(normalizePhone(fields.phone.value));
+  if (["firstName", "surname"].includes(fieldName))
+    return fields[fieldName].value.trim().length >= 1;
+  if (fieldName === "phone")
+    return /^\+233\d{9}$/.test(normalizePhone(fields.phone.value));
   if (fieldName === "dateOfBirth") return Boolean(fields.dateOfBirth.value);
-  if (fieldName === "ghanaCard") return /^GHA-\d{9}-\d$/.test(normalizeGhanaCard(fields.ghanaCard.value));
+  if (fieldName === "ghanaCard")
+    return /^GHA-\d{9}-\d$/.test(normalizeGhanaCard(fields.ghanaCard.value));
   if (fieldName === "location") return fields.location.value.trim().length >= 2;
   if (fieldName === "topicOfInterest") return getSelectedTopics().length > 0;
   return false;
@@ -173,12 +204,16 @@ function updateProgress() {
 }
 
 function setSubmitting(isSubmitting) {
-  submitButton.disabled = isSubmitting;
-  submitButtonText.textContent = isSubmitting ? "Submitting..." : "Submit Registration";
+  submitButton.disabled = isSubmitting || !intakeConfig?.accepting_submissions;
+  submitButtonText.textContent = isSubmitting
+    ? "Submitting..."
+    : "Submit Registration";
   submitSpinner.classList.toggle("visible", isSubmitting);
 
   [...Object.values(fields), ...Object.values(topicFields)].forEach((field) => {
-    if (field) field.disabled = isSubmitting;
+    if (field)
+      field.disabled =
+        isSubmitting || (field === fields.consent && !intakeConfig);
   });
 }
 
@@ -199,7 +234,9 @@ function resetForAnotherRegistration() {
     if (field) field.checked = false;
   });
   updateProgress();
-  fields.fullName.focus();
+  previousContent = null;
+  submissionId = null;
+  fields.firstName.focus();
 }
 
 // Prevent future dates in browsers that support native date limits.
@@ -243,56 +280,133 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   clearStatus();
 
+  if (!intakeConfig?.accepting_submissions) return;
   if (!validateForm()) {
-    const firstInvalid = requiredDataFields
-      .map((name) => fields[name])
-      .find((field) => field.getAttribute("aria-invalid") === "true") || (!fields.consent.checked ? fields.consent : null);
+    const firstInvalid =
+      requiredDataFields
+        .map((name) => fields[name])
+        .find((field) => field.getAttribute("aria-invalid") === "true") ||
+      (!fields.consent.checked ? fields.consent : null);
     firstInvalid?.focus();
     return;
   }
 
-  const payload = {
-    fullName: fields.fullName.value.trim(),
+  const values = {
+    firstName: fields.firstName.value,
+    otherNames: fields.otherNames.value,
+    surname: fields.surname.value,
     phone: normalizePhone(fields.phone.value),
     dateOfBirth: fields.dateOfBirth.value,
     ghanaCard: normalizeGhanaCard(fields.ghanaCard.value),
-    location: fields.location.value.trim(),
+    location: fields.location.value,
     topicOfInterest: getSelectedTopics(),
-    consent: true
+    website: document.getElementById("website").value,
   };
-
+  const content = JSON.stringify([values, intakeConfig.privacy_notice_version]);
+  if (content !== previousContent) {
+    submissionId = crypto.randomUUID();
+    previousContent = content;
+  }
+  const payload = UnijayIntake.buildPayload(
+    values,
+    intakeConfig.privacy_notice_version,
+    submissionId,
+  );
+  const body = new FormData();
+  body.set("payload", JSON.stringify(payload));
   setSubmitting(true);
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_BASE}/api/v1/participant-intake`, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
+      credentials: "omit",
+      redirect: "error",
+      body,
+      signal: AbortSignal.timeout(20000),
     });
 
-    if (!response.ok || !response.headers.get("Content-Type")?.includes("application/json")) {
-      throw new Error("The registration service is unavailable. Contact the registration administrator.");
-    }
-
     const result = await response.json();
-
-    if (!result.success) {
-      if (result.code === "DUPLICATE") {
-        throw new Error("This person may already be registered. The phone number or Ghana Card number already exists. Please check the details before trying again.");
-      }
-      throw new Error(result.message || "Submission failed.");
+    if (!response.ok) {
+      if (
+        result?.error?.code === "PRIVACY_NOTICE_REQUIRED" ||
+        result?.code === "PRIVACY_NOTICE_REQUIRED"
+      )
+        await loadConfiguration();
+      throw new Error(
+        "Registration could not be accepted. Check the fields and current privacy notice, then retry.",
+      );
     }
-
+    if (
+      response.status !== 202 ||
+      typeof result.receipt_id !== "string" ||
+      result.status !== "RECEIVED"
+    )
+      throw new Error(
+        "Unexpected registration response. Retry this submission.",
+      );
+    previousContent = null;
+    submissionId = null;
     form.reset();
     updateProgress();
-    showSuccess(result.recordId);
+    showSuccess(result.receipt_id);
   } catch (error) {
-    console.error(error);
     statusMessage.className = "status-message error";
-    statusMessage.textContent = error.message || "Unable to submit registration. Check your internet connection and try again.";
+    statusMessage.textContent =
+      error.message ||
+      "Unable to submit registration. Check your internet connection and try again.";
   } finally {
     setSubmitting(false);
   }
 });
 
+async function loadConfiguration() {
+  intakeConfig = null;
+  submitButton.disabled = true;
+  fields.consent.checked = false;
+  fields.consent.disabled = true;
+  try {
+    const url = new URL(API_BASE);
+    if (
+      url.username ||
+      url.password ||
+      url.pathname !== "/" ||
+      !["https:", "http:"].includes(url.protocol) ||
+      (url.protocol === "http:" &&
+        !["localhost", "127.0.0.1"].includes(url.hostname))
+    )
+      throw new Error("configuration");
+    const response = await fetch(
+      API_BASE + "/api/v1/participant-intake/config",
+      {
+        credentials: "omit",
+        cache: "no-store",
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    const config = await response.json();
+    if (
+      !response.ok ||
+      !config.accepting_submissions ||
+      !config.privacy_notice_version ||
+      !config.privacy_notice ||
+      config.source_system !== "UNIJAY_FASHION"
+    )
+      throw new Error("configuration");
+    for (const field of Object.values(topicFields)) {
+      if (!config.training_interests?.[field.value])
+        throw new Error("configuration");
+    }
+    document.getElementById("privacyNotice").textContent =
+      config.privacy_notice;
+    document.getElementById("privacyVersion").textContent =
+      "Notice version: " + config.privacy_notice_version;
+    intakeConfig = config;
+    fields.consent.disabled = false;
+    submitButton.disabled = false;
+  } catch {
+    document.getElementById("privacyNotice").textContent =
+      "Registration is temporarily unavailable. Please try again later.";
+  }
+}
 updateProgress();
+loadConfiguration();
