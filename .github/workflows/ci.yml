@@ -1,0 +1,32 @@
+name: Collector CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - feature/happy-public-intake
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  collector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check data-collection-tool/app.js
+      - run: node --test tests/*.test.cjs
+      - run: node build.mjs
+        env:
+          HAPPY_API_BASE_URL: https://happy-api.example.invalid
+      - name: Reject legacy server files in the static release
+        run: |
+          test ! -e dist/Code.gs
+          test ! -e dist/appsscript.json
